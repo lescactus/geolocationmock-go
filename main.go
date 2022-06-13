@@ -25,13 +25,14 @@ const (
 )
 
 var (
-	latency = flag.Duration("latency", 0, "Response request latency")
-	failure = flag.Int("failure", 0, "Failure response rate")
+	provider = flag.String("provider", "ipapi", "Provier name. Available: 'ipapi', 'ipbase'")
+	latency  = flag.Duration("latency", 0, "Response request latency")
+	failure  = flag.Int("failure", 0, "Failure response rate")
 )
 
-// MockResponse represents the json response of the ip-api.com API
+// MockIPAPIResponse represents the json response of the ip-api.com API
 // Documentation can be found at https://ip-api.com/docs/api:json
-type MockResponse struct {
+type MockIPAPIResponse struct {
 	Status      string  `json:"status"`
 	Country     string  `json:"country"`
 	CountryCode string  `json:"countryCode"`
@@ -48,8 +49,8 @@ type MockResponse struct {
 	Query       string  `json:"query"`
 }
 
-// IP is the handler for the /{ip} route
-func IP(ctx *fasthttp.RequestCtx) {
+// IPAPI is the http://ip-api.com/ mock handler for the /{ip} route
+func IPAPI(ctx *fasthttp.RequestCtx) {
 	if isFailure() {
 		fmt.Fprintf(ctx, "%s", []byte(`error`))
 		ctx.SetStatusCode(http.StatusInternalServerError)
@@ -58,7 +59,7 @@ func IP(ctx *fasthttp.RequestCtx) {
 
 	cc := getRandomCountryCode()
 
-	m := MockResponse{
+	m := MockIPAPIResponse{
 		Query:       fmt.Sprintf("%s", ctx.UserValue("ip")),
 		CountryCode: cc.Alpha2(),
 		Country:     cc.String(),
@@ -126,7 +127,12 @@ func main() {
 
 	// router and route registration
 	r := router.New()
-	r.GET("/{ip}", IP)
+	switch *provider {
+	case "ipapi":
+		r.GET("/{ip}", IPAPI)
+	default:
+		r.GET("/{ip}", IPAPI)
+	}
 
 	// hasthttp server
 	server := &fasthttp.Server{
@@ -135,6 +141,7 @@ func main() {
 	}
 
 	// listen and serve
+	fmt.Println("Starting server ...")
 	if err = server.Serve(ln); err != nil {
 		panic(fmt.Sprintf("error in fasthttp Server: %s", err))
 	}
