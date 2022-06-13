@@ -1,11 +1,9 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"math/rand"
-	"net/http"
 	"time"
 
 	"github.com/biter777/countries"
@@ -29,54 +27,6 @@ var (
 	latency  = flag.Duration("latency", 0, "Response request latency")
 	failure  = flag.Int("failure", 0, "Failure response rate")
 )
-
-// MockIPAPIResponse represents the json response of the ip-api.com API
-// Documentation can be found at https://ip-api.com/docs/api:json
-type MockIPAPIResponse struct {
-	Status      string  `json:"status"`
-	Country     string  `json:"country"`
-	CountryCode string  `json:"countryCode"`
-	Region      string  `json:"region"`
-	RegionName  string  `json:"regionName"`
-	City        string  `json:"city"`
-	Zip         string  `json:"zip"`
-	Lat         float64 `json:"lat"`
-	Lon         float64 `json:"lon"`
-	Timezone    string  `json:"timezone"`
-	Isp         string  `json:"isp"`
-	Org         string  `json:"org"`
-	As          string  `json:"as"`
-	Query       string  `json:"query"`
-}
-
-// IPAPI is the http://ip-api.com/ mock handler for the /{ip} route
-func IPAPI(ctx *fasthttp.RequestCtx) {
-	if isFailure() {
-		fmt.Fprintf(ctx, "%s", []byte(`error`))
-		ctx.SetStatusCode(http.StatusInternalServerError)
-		return
-	}
-
-	cc := getRandomCountryCode()
-
-	m := MockIPAPIResponse{
-		Query:       fmt.Sprintf("%s", ctx.UserValue("ip")),
-		CountryCode: cc.Alpha2(),
-		Country:     cc.String(),
-		City:        getRandomCity(),
-		Lat:         getRandomCoordinate(LatMin, LatMax),
-		Lon:         getRandomCoordinate(LonMin, LonMax),
-	}
-
-	resp, err := json.Marshal(m)
-	if err != nil {
-		fmt.Printf("Error: %s", err.Error())
-	}
-
-	time.Sleep(*latency)
-	fmt.Println(string(resp)) // just for a basic logging
-	fmt.Fprintf(ctx, "%s", []byte(resp))
-}
 
 // Return *failure % true
 func isFailure() bool {
@@ -130,6 +80,8 @@ func main() {
 	switch *provider {
 	case "ipapi":
 		r.GET("/{ip}", IPAPI)
+	case "ipbase":
+		r.GET("/{ip}", IPBase)
 	default:
 		r.GET("/{ip}", IPAPI)
 	}
@@ -141,7 +93,7 @@ func main() {
 	}
 
 	// listen and serve
-	fmt.Println("Starting server ...")
+	fmt.Printf("Starting server mocking %s provider...\n", *provider)
 	if err = server.Serve(ln); err != nil {
 		panic(fmt.Sprintf("error in fasthttp Server: %s", err))
 	}
