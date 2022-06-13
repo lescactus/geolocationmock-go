@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: geolocationmock-go
+  labels:
+    app: geolocationmock-go
+spec:
+  selector:
+    matchLabels:
+      app: geolocationmock-go
+  template:
+    metadata:
+      labels:
+        app: geolocationmock-go
+    spec:
+      containers:
+      - name: geolocationmock-go
+        image: geolocationmock-go
+        ports:
+        - name: http
+          containerPort: 8000
+        resources:
+          requests:
+            memory: "8Mi"
+            cpu: "10m"
+          limits:
+            memory: "16Mi"
+            cpu: "100m"
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
+      serviceAccountName: geolocationmock-go
