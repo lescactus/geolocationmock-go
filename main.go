@@ -26,6 +26,7 @@ var (
 	provider = flag.String("provider", "ipapi", "Provier name. Available: 'ipapi', 'ipbase'")
 	latency  = flag.Duration("latency", 0, "Response request latency")
 	failure  = flag.Int("failure", 0, "Failure response rate")
+	e2e      = flag.Bool("e2e", false, "Enable 'e2e' mode: set fixed responses instead of random")
 )
 
 // Return *failure % true
@@ -81,9 +82,14 @@ func main() {
 	case "ipapi":
 		r.GET("/{ip}", IPAPI)
 	case "ipbase":
-		r.GET("/{ip}", IPBase)
+		if *e2e {
+			r.GET("/ip/1.1.1.1", IPBaseOneONeOneOne)
+			r.GET("/ip/2.2.2.2", IPBaseTwoTwoTwoTwo)
+			r.GET("/ip/3.3.3.3", IPBaseThreeThreeThreeThree)
+		}
+		r.GET("/{ip:*}", IPBase)
 	default:
-		r.GET("/{ip}", IPAPI)
+		r.GET("/{ip:*}", IPAPI)
 	}
 
 	// hasthttp server

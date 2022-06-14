@@ -91,6 +91,59 @@ type MockIPBaseResponseDataLocationCountry struct {
 	IsInEuropeanUnion bool     `json:"is_in_european_union"`
 }
 
+var (
+	OneOneOneOne = MockIPBaseResponse{
+		Data: MockIPBaseResponseData{
+			IP: "1.1.1.1",
+			Location: MockIPBaseResponseDataLocation{
+				Latitude:  -27.4766,
+				Longitude: 153.0166,
+				City: MockIPBaseResponseDataLocationCity{
+					Name: "South Brisbane",
+				},
+				Country: MockIPBaseResponseDataLocationCountry{
+					Name:   "Australia",
+					Alpha2: "AU",
+				},
+			},
+		},
+	}
+
+	TwoTwoTwoTwo = MockIPBaseResponse{
+		Data: MockIPBaseResponseData{
+			IP: "2.2.2.2",
+			Location: MockIPBaseResponseDataLocation{
+				Latitude:  48.8566,
+				Longitude: 2.35222,
+				City: MockIPBaseResponseDataLocationCity{
+					Name: "Paris",
+				},
+				Country: MockIPBaseResponseDataLocationCountry{
+					Name:   "France",
+					Alpha2: "FR",
+				},
+			},
+		},
+	}
+
+	ThreeThreeThreeThree = MockIPBaseResponse{
+		Data: MockIPBaseResponseData{
+			IP: "3.3.3.3",
+			Location: MockIPBaseResponseDataLocation{
+				Latitude:  41.8781,
+				Longitude: -87.6298,
+				City: MockIPBaseResponseDataLocationCity{
+					Name: "Chicago",
+				},
+				Country: MockIPBaseResponseDataLocationCountry{
+					Name:   "United States",
+					Alpha2: "US",
+				},
+			},
+		},
+	}
+)
+
 func IPBase(ctx *fasthttp.RequestCtx) {
 	if isFailure() {
 		fmt.Fprintf(ctx, "%s", []byte(`error`))
@@ -123,6 +176,37 @@ func IPBase(ctx *fasthttp.RequestCtx) {
 	}
 
 	time.Sleep(*latency)
+	fmt.Println(string(resp)) // just for a basic logging
+	fmt.Fprintf(ctx, "%s", []byte(resp))
+}
+
+func IPBaseOneONeOneOne(ctx *fasthttp.RequestCtx) {
+	resp, err := json.Marshal(OneOneOneOne)
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+	}
+
+	fmt.Println(string(resp)) // just for a basic logging
+	fmt.Fprintf(ctx, "%s", []byte(resp))
+}
+
+
+func IPBaseTwoTwoTwoTwo(ctx *fasthttp.RequestCtx) {
+	resp, err := json.Marshal(TwoTwoTwoTwo)
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+	}
+
+	fmt.Println(string(resp)) // just for a basic logging
+	fmt.Fprintf(ctx, "%s", []byte(resp))
+}
+
+func IPBaseThreeThreeThreeThree(ctx *fasthttp.RequestCtx) {
+	resp, err := json.Marshal(ThreeThreeThreeThree)
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+	}
+
 	fmt.Println(string(resp)) // just for a basic logging
 	fmt.Fprintf(ctx, "%s", []byte(resp))
 }
