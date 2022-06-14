@@ -83,16 +83,16 @@ func main() {
 		r.GET("/{ip}", IPAPI)
 	case "ipbase":
 		if *e2e {
-			r.GET("/ip/1.1.1.1", IPBaseOneONeOneOne)
-			r.GET("/ip/2.2.2.2", IPBaseTwoTwoTwoTwo)
-			r.GET("/ip/3.3.3.3", IPBaseThreeThreeThreeThree)
+			r.GET("/1.1.1.1{params?}", IPBaseOneONeOneOne)
+			r.GET("/2.2.2.2{params?}", IPBaseTwoTwoTwoTwo)
+			r.GET("/3.3.3.3{params?}", IPBaseThreeThreeThreeThree)
 		}
 		r.GET("/{ip:*}", IPBase)
 	default:
-		r.GET("/{ip:*}", IPAPI)
+		r.GET("/{ip}", IPAPI)
 	}
 
-	// hasthttp server
+	// fasthttp server
 	server := &fasthttp.Server{
 		Concurrency: 16 * 256 * 1024,
 		Handler:     r.Handler,

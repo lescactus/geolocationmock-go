@@ -190,7 +190,6 @@ func IPBaseOneONeOneOne(ctx *fasthttp.RequestCtx) {
 	fmt.Fprintf(ctx, "%s", []byte(resp))
 }
 
-
 func IPBaseTwoTwoTwoTwo(ctx *fasthttp.RequestCtx) {
 	resp, err := json.Marshal(TwoTwoTwoTwo)
 	if err != nil {
