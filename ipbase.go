@@ -130,10 +130,10 @@ var (
 		Data: MockIPBaseResponseData{
 			IP: "3.3.3.3",
 			Location: MockIPBaseResponseDataLocation{
-				Latitude:  41.8781,
-				Longitude: -87.6298,
+				Latitude:  39.0469,
+				Longitude: -77.4903,
 				City: MockIPBaseResponseDataLocationCity{
-					Name: "Chicago",
+					Name: "Ashburn",
 				},
 				Country: MockIPBaseResponseDataLocationCountry{
 					Name:   "United States",
